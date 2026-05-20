@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acumatica-lint"
+version = "0.1.0"
+description = "Free, open-source linter for Acumatica customization projects. The full pipeline is AcuOps."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Studio B", email = "hello@studiob.ai" },
+]
+keywords = [
+    "acumatica",
+    "linter",
+    "customization",
+    "validate",
+    "project.xml",
+    "static-analysis",
+    "devops",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Build Tools",
+]
+dependencies = [
+    # PyYAML powers the acuops.yaml ISV co-publish allowlist parsing.
+    # All other validators are stdlib-only.
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://acuops.com"
+Repository = "https://github.com/studio-b-ai/acumatica-lint"
+"Issue tracker" = "https://github.com/studio-b-ai/acumatica-lint/issues"
+"Full pipeline (AcuOps)" = "https://acuops.com"
+
+[project.scripts]
+acumatica-lint = "acumatica_lint.validate:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E501"]  # Line length — validate.py has long error messages by design

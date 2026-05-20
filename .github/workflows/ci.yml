@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-smoke:
+    name: Lint + smoke (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ruff lint
+        run: ruff check src/
+
+      - name: Smoke — import + version
+        run: |
+          python -c "import acumatica_lint; print('version:', acumatica_lint.__version__)"
+          python -m acumatica_lint 2>&1 | head -10 || true
+          acumatica-lint 2>&1 | head -10 || true
+
+      - name: Smoke — run against a minimal project.xml fixture
+        run: |
+          mkdir -p /tmp/acufix
+          cat > /tmp/acufix/project.xml <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <Customization level="0" description="" product-version="">
+          </Customization>
+          XML
+          # Exit code 0 expected — minimal valid file should pass
+          acumatica-lint /tmp/acufix/project.xml || (echo "FAIL: minimal project.xml flagged as invalid"; exit 1)
