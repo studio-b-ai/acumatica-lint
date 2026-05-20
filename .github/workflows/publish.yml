@@ -1,13 +1,22 @@
 name: Publish to PyPI
 
 # Publishes acumatica-lint to PyPI via PyPI Trusted Publisher (OIDC) — no API
-# token required. Fires on a published GitHub release OR a pushed tag matching
-# `v*`. The PyPI side must be configured with a Trusted Publisher pointing at:
+# token required. The PyPI-side configuration was added 2026-05-20 with claims
+# pointing at:
 #
 #   Owner:        studio-b-ai
 #   Repository:   acumatica-lint
 #   Workflow:     publish.yml
 #   Environment:  pypi-publish
+#
+# Triggers:
+#   - release: published — primary path (used for v0.1.0)
+#   - push: tags v*       — fallback path
+#   - workflow_dispatch   — manual smoke test of OIDC; PyPI rejects same-version
+#                           re-uploads with HTTP 400 'File already exists' which
+#                           is the success signal for the OIDC TOKEN-MINT step.
+#                           If OIDC config is broken we'd see 'invalid-publisher'
+#                           before the upload attempt.
 #
 # See https://docs.pypi.org/trusted-publishers/ for the PyPI-side setup.
 
@@ -17,6 +26,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -54,15 +64,8 @@ jobs:
           test -f dist/acumatica_lint-*.whl
           test -f dist/acumatica_lint-*.tar.gz
 
-      - name: Publish to PyPI
-        # Primary: PYPI_API_TOKEN secret (project-scoped). Trusted Publisher
-        # OIDC is the future-state — pending PyPI-side Pending Publisher
-        # configuration with claims matching:
-        #   repository: studio-b-ai/acumatica-lint
-        #   workflow_ref: .../publish.yml@refs/tags/v*
-        #   environment: pypi-publish
-        # When OIDC is configured + working, the `password` input below can
-        # be dropped (action falls back to id-token: write OIDC by default).
+      - name: Publish to PyPI (Trusted Publisher OIDC)
+        # No `password:` input — the action uses id-token: write OIDC by default
+        # when no password is provided. PYPI_API_TOKEN GitHub secret remains as
+        # backup but is no longer the active credential.
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
