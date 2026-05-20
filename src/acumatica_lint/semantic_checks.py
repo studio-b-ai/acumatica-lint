@@ -11,7 +11,6 @@ Usage:
 """
 
 import json
-import os
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -635,7 +634,7 @@ def check_pxdefault_vs_sql(
     errors: list[str] = []
     warnings: list[str] = []
 
-    sql_upper = sql_text.upper()
+    sql_text.upper()
 
     for field in fields:
         if field["default_value"] is None:

@@ -37,8 +37,8 @@ Every hard-fail check ships an escape-hatch comment marker for audited exception
 """
 
 import os
-import sys
 import re
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -1127,16 +1127,16 @@ def validate_entity_mapping_cleanup(root, file_path: Path):
     all_cs = _collect_cs()
     if not _ENTITY_MAPPING_CLEANUP_RE.search(all_cs):
         warn(
-            f"<EntityEndpoint> contains <Mapping> rows but no CustomizationPlugin .cs\n"
-            f"         file references 'EntityMapping'.\n"
-            f"         Re-publishing re-INSERTs mapping rows; on tenants other than CID=1 this\n"
-            f"         causes duplicate MappingKey collisions → ArgumentException in\n"
-            f"         MetadataProvider.GetEntityMappings → HTTP 500 on every /entity/* request.\n"
-            f"         Add an idempotent DELETE + re-INSERT in your CustomizationPlugin.Install()\n"
-            f"         with a '-- SAFE_DELETE_EXEMPT: <reason>' comment (required by validate-project Rule #79).\n"
-            f"         Reference: AesthetikContainersInstall.cs EntityMapping cleanup.\n"
-            f"         Root cause of 2026-04-26 sandbox 16-hour outage (client-asthetik#53/#55).\n"
-            f"         See CLAUDE.md rule #74."
+            "<EntityEndpoint> contains <Mapping> rows but no CustomizationPlugin .cs\n"
+            "         file references 'EntityMapping'.\n"
+            "         Re-publishing re-INSERTs mapping rows; on tenants other than CID=1 this\n"
+            "         causes duplicate MappingKey collisions → ArgumentException in\n"
+            "         MetadataProvider.GetEntityMappings → HTTP 500 on every /entity/* request.\n"
+            "         Add an idempotent DELETE + re-INSERT in your CustomizationPlugin.Install()\n"
+            "         with a '-- SAFE_DELETE_EXEMPT: <reason>' comment (required by validate-project Rule #79).\n"
+            "         Reference: AesthetikContainersInstall.cs EntityMapping cleanup.\n"
+            "         Root cause of 2026-04-26 sandbox 16-hour outage (client-asthetik#53/#55).\n"
+            "         See CLAUDE.md rule #74."
         )
     else:
         ok("EntityEndpoint mappings: plugin references EntityMapping cleanup")
@@ -1248,11 +1248,11 @@ def validate_gi_grant_required_in_xml(root, file_path: Path):
             )
     else:
         if gi_blocks:
-            odata_count = sum(
+            sum(
                 1 for (n, s) in [(gi_block.find("GIDesign"), gi_block) for gi_block in gi_blocks]
                 if n is not None and n.get("ExposeViaOData") == "1"
             )
-            ok(f"GI inline RolesInGraph: all OData-exposed GI(s) have inline role declarations")
+            ok("GI inline RolesInGraph: all OData-exposed GI(s) have inline role declarations")
 
 
 # ── W4 Guard B: GI SiteMap no orphan ParentID ────────────────────────────────
@@ -1424,7 +1424,7 @@ def validate_sitemap_no_orphans(root):
     total_bad = orphan_count + placeholder_count
     if total_bad == 0 and unknown_parent_count == 0:
         if gi_blocks:
-            ok(f"SiteMap ParentIDs: all GI SiteMap rows have non-orphan ParentIDs")
+            ok("SiteMap ParentIDs: all GI SiteMap rows have non-orphan ParentIDs")
 
 
 # ── W4 Guard D: zip name must match acuops.yaml primary project name ──────────
@@ -2913,7 +2913,7 @@ def validate_pxdb_has_sql(class_name: str, code: str, all_sql_text: str):
     # Find PXCacheExtension declarations
     ext_matches = re.finditer(r"class\s+(\w+)\s*:\s*PXCacheExtension<(\w+)>", clean)
     for m in ext_matches:
-        ext_name = m.group(1)
+        m.group(1)
         base_dac = m.group(2)
 
         # Extract the class body (rough — find matching braces)
