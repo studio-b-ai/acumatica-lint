@@ -1,0 +1,59 @@
+name: Publish to PyPI
+
+# Publishes acumatica-lint to PyPI via PyPI Trusted Publisher (OIDC) — no API
+# token required. Fires on a published GitHub release OR a pushed tag matching
+# `v*`. The PyPI side must be configured with a Trusted Publisher pointing at:
+#
+#   Owner:        studio-b-ai
+#   Repository:   acumatica-lint
+#   Workflow:     publish.yml
+#   Environment:  pypi-publish
+#
+# See https://docs.pypi.org/trusted-publishers/ for the PyPI-side setup.
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-publish:
+    name: Build wheel + publish via Trusted Publisher OIDC
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi-publish
+      url: https://pypi.org/project/acumatica-lint/
+    permissions:
+      # MUST be `id-token: write` for Trusted Publisher OIDC.
+      id-token: write
+      # `contents: read` is sufficient — we don't push anything back.
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build wheel + sdist
+        run: python -m build
+
+      - name: Verify built artifacts
+        run: |
+          ls -lh dist/
+          test -f dist/acumatica_lint-*.whl
+          test -f dist/acumatica_lint-*.tar.gz
+
+      - name: Publish to PyPI
+        # No `with:` block — Trusted Publisher OIDC uses the workflow's id-token.
+        uses: pypa/gh-action-pypi-publish@release/v1
