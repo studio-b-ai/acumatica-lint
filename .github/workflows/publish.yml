@@ -55,5 +55,14 @@ jobs:
           test -f dist/acumatica_lint-*.tar.gz
 
       - name: Publish to PyPI
-        # No `with:` block — Trusted Publisher OIDC uses the workflow's id-token.
+        # Primary: PYPI_API_TOKEN secret (project-scoped). Trusted Publisher
+        # OIDC is the future-state — pending PyPI-side Pending Publisher
+        # configuration with claims matching:
+        #   repository: studio-b-ai/acumatica-lint
+        #   workflow_ref: .../publish.yml@refs/tags/v*
+        #   environment: pypi-publish
+        # When OIDC is configured + working, the `password` input below can
+        # be dropped (action falls back to id-token: write OIDC by default).
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
