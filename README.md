@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/acumatica-lint.svg)](https://pypi.org/project/acumatica-lint/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 > Free, open-source linter for Acumatica customization projects. Catches publish-time failure modes — silent `NullReferenceException`s, dropped DAC extensions, orphan SiteMap rows, GI catalog exclusions, schema mutations without `IF NOT EXISTS` guards — before they restart your production app pool.
 >
@@ -14,7 +14,7 @@
 pip install acumatica-lint
 ```
 
-Python 3.9+. One dependency (`pyyaml` for the ISV co-publish allowlist parser). Works on macOS, Linux, and Windows.
+Python 3.10+. One dependency (`pyyaml` for the ISV co-publish allowlist parser). Works on macOS, Linux, and Windows.
 
 ## Use
 
